@@ -1,6 +1,19 @@
+import React, {useRef, useImperativeHandle} from "react"
 import classes from "./LoginField.module.css"
 
-export default function LoginField(props) {
+const LoginField = React.forwardRef((props, ref) => {
+    const inputRef = useRef();
+
+    const activate = () => {
+        inputRef.current.focus();
+    };
+
+    useImperativeHandle(ref, () => {
+        return {
+            activate: activate
+        }
+    })
+
     return (
         <div
         className={`${classes.control} ${
@@ -11,10 +24,13 @@ export default function LoginField(props) {
         <input
           type={`${props.type}`}
           id={`${props.id}`}
+          ref={inputRef}
           value={props.value}
           onChange={props.onChangeHandler}
           onBlur={props.onBlurHandler}
         />
       </div>
     );
-}
+});
+
+export default LoginField

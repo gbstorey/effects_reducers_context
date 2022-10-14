@@ -1,6 +1,6 @@
 
 // -------------IMPORTS--------------//
-import React, { useState, useReducer, useContext, useEffect } from 'react';
+import React, { useState, useReducer, useContext, useEffect, useRef } from 'react';
 
 import Card from '../UI/Card/Card';
 import classes from './Login.module.css';
@@ -47,6 +47,9 @@ const Login = (props) => {
 
   const authCtx = useContext(AuthContext);
 
+  const emailInputRef = useRef();
+  const passwordInputRef = useRef();
+
   useEffect(() => {
     const identifier = setTimeout(() => {
       console.log('Checking form validity!');
@@ -76,7 +79,13 @@ const Login = (props) => {
 
   const submitHandler = (event) => {
     event.preventDefault();
-    authCtx.onLogin(emailState.value, passwordState.value);
+    if (formIsValid) {
+      authCtx.onLogin(emailState.value, passwordState.value);
+    } else if (!emailState.isValid) {
+      emailInputRef.current.activate();
+    } else {
+      passwordInputRef.current.activate();
+    }
   };
 
 // ------------- Component Elements--------------//
@@ -86,6 +95,7 @@ const Login = (props) => {
       <form onSubmit={submitHandler}>
         <LoginField
             type="email"
+            ref={emailInputRef}
             id="email"
             label="E-Mail"
             value={emailState.value}
@@ -93,6 +103,7 @@ const Login = (props) => {
             onChangeHandler={emailChangeHandler}
             onBlurHandler={validateEmailHandler} />
         <LoginField 
+            ref = {passwordInputRef}
             type="password"
             id="password"
             label="Password (6+ chars)"
@@ -101,7 +112,7 @@ const Login = (props) => {
             onChangeHandler={passwordChangeHandler}
             onBlurHandler={validatePasswordHandler}/>
         <div className={classes.actions}>
-          <Button type="submit" className={classes.btn} disabled={!formIsValid}>
+          <Button type="submit" className={classes.btn}>
             Login
           </Button>
         </div>
